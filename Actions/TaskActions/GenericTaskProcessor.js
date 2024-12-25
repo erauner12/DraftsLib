@@ -471,9 +471,10 @@ function GenericTaskProcessor_run() {
           }
         }
       }
+    }
 
-      // Nested function definitions from original gist for user prompting:
-      function showMainPrompt(taskData, commentsText, scenario) {
+    // Nested function definitions from original gist for user prompting:
+    function showMainPrompt(taskData, commentsText, scenario) {
         let p = new Prompt();
         p.title = "Task Review & Action";
         p.message = "Review the task details below and select an action.";
@@ -604,4 +605,3 @@ function GenericTaskProcessor_run() {
 
     })();
 }
-
