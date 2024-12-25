@@ -16,17 +16,19 @@ function customOverrideOrExtension() {
 }
 
 // Example custom class
-class CommonUtilityClass {
+if (typeof CommonUtilityClass === "undefined") {
+  class CommonUtilityClass {
     constructor() {
-        this.exampleProperty = "ExampleValue";
+      this.exampleProperty = "ExampleValue";
     }
 
     doSomething() {
-        console.log("CommonUtilityClass doing something!");
+      console.log("CommonUtilityClass doing something!");
     }
+  }
 }
 
 // Another placeholder function
 function commonPlaceholder() {
-    console.log("commonPlaceholder() in CommonHelpers.js");
+  console.log("commonPlaceholder() in CommonHelpers.js");
 }
