@@ -12,11 +12,17 @@ require("Common/LoggingUtils.js");
 
 // 2) Load config JSON if desired
 let fm = FileManager.createCloud();
-let myConfig = fm.readJSON("/Library/Scripts/Common/MyConfig.json");
-if (myConfig) {
-  console.log(
-    "Loaded config: " + myConfig.appName + " (v" + myConfig.version + ")"
-  );
+if (typeof globalThis.myConfig === "undefined") {
+  globalThis.myConfig = fm.readJSON("/Library/Scripts/Common/MyConfig.json");
+  if (globalThis.myConfig) {
+    console.log(
+      "Loaded config: " +
+        globalThis.myConfig.appName +
+        " (v" +
+        globalThis.myConfig.version +
+        ")"
+    );
+  }
 }
 
 // 3) Load action-specific scripts
