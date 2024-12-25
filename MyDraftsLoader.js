@@ -57,6 +57,10 @@ require("Actions/TaskActions/ProjectMaintenance.js");
 require("Actions/MeetingActions/AgendaBuilder.js");
 require("Actions/MeetingActions/MeetingNotes.js");
 
+// 5) Load new generic scripts
+require("Actions/TaskActions/GenericExecutor.js");
+require("Actions/TaskActions/GenericTaskProcessor.js");
+
 // 4) Optionally define some “global test functions” or convenience wrappers
 
 function loaderTestFunction() {
