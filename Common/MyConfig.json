@@ -1,0 +1,9 @@
+{
+  "appName": "My Hybrid Drafts System",
+  "version": "0.1",
+  "options": {
+    "enableAdvancedFeatures": true,
+    "customDateFormat": "YYYY-MM-DD"
+  },
+  "customKey": "This is an example config value."
+}
