@@ -10,10 +10,14 @@ require("Common/CommonHelpers.js");
 require("Common/DateTimeUtils.js");
 require("Common/LoggingUtils.js");
 
-// 2) Load config JSON if desired
-let fm = FileManager.createCloud();
+/* 2) Load config JSON if desired */
+if (typeof globalThis.fm === "undefined") {
+  globalThis.fm = FileManager.createCloud();
+}
 if (typeof globalThis.myConfig === "undefined") {
-  globalThis.myConfig = fm.readJSON("/Library/Scripts/Common/MyConfig.json");
+  globalThis.myConfig = globalThis.fm.readJSON(
+    "/Library/Scripts/Common/MyConfig.json"
+  );
   if (globalThis.myConfig) {
     console.log(
       "Loaded config: " +
