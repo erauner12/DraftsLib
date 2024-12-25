@@ -14,7 +14,9 @@ require("Common/LoggingUtils.js");
 let fm = FileManager.createCloud();
 let myConfig = fm.readJSON("/Library/Scripts/Common/MyConfig.json");
 if (myConfig) {
-  console.log("Loaded config: " + myConfig.appName + " (v" + myConfig.version + ")");
+  console.log(
+    "Loaded config: " + myConfig.appName + " (v" + myConfig.version + ")"
+  );
 }
 
 // 3) Load action-specific scripts
@@ -41,12 +43,14 @@ function loaderCustomDateCheck() {
 }
 
 // Example custom class inside the loader
-class LoaderUtilityClass {
-  constructor() {
-    this.loaderProp = "LoaderProp";
-  }
+if (typeof LoaderUtilityClass === "undefined") {
+  class LoaderUtilityClass {
+    constructor() {
+      this.loaderProp = "LoaderProp";
+    }
 
-  showInfo() {
-    console.log("LoaderUtilityClass showInfo: " + this.loaderProp);
+    showInfo() {
+      console.log("LoaderUtilityClass showInfo: " + this.loaderProp);
+    }
   }
 }
