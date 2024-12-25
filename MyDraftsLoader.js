@@ -26,7 +26,24 @@ if (typeof globalThis.myConfig === "undefined") {
         globalThis.myConfig.version +
         ")"
     );
+
+    // Set log level from config by default, or default to "info"
+    if (globalThis.myConfig.options && globalThis.myConfig.options.logLevel) {
+      setLogLevel(globalThis.myConfig.options.logLevel);
+    } else {
+      setLogLevel("info");
+    }
+  } else {
+    // In case config not found
+    setLogLevel("info");
   }
+}
+
+// Optional override from template tag "logLevel"
+let actionLogLevel = draft.getTemplateTag("logLevel");
+if (actionLogLevel && actionLogLevel.length > 0) {
+  console.log("Overriding log level from template tag: " + actionLogLevel);
+  setLogLevel(actionLogLevel);
 }
 
 // 3) Load action-specific scripts
