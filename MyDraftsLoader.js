@@ -40,11 +40,13 @@ if (typeof globalThis.myConfig === "undefined") {
 }
 
 // Optional override from template tag "logLevel"
-let userLogLevel = draft.getTemplateTag("logLevel");
-if (userLogLevel && userLogLevel.length > 0) {
-  console.log("Overriding log level from template tag: " + userLogLevel);
-  setLogLevel(userLogLevel);
-}
+(function () {
+  let logLevelOverride = draft.getTemplateTag("logLevel");
+  if (logLevelOverride && logLevelOverride.length > 0) {
+    console.log("Overriding log level from template tag: " + logLevelOverride);
+    setLogLevel(logLevelOverride);
+  }
+})();
 
 // 3) Load action-specific scripts
 // Task-related
