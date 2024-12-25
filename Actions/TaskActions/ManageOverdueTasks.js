@@ -61,24 +61,9 @@ function ManageOverdueTasks_run() {
           let userAction = actionPrompt.buttonPressed;
           logCustomMessage("User selected action: " + userAction);
 
-          // Prepare the temporary draft
-          let tempDraft = Draft.create();
-          tempDraft.addTag("temp");
-          tempDraft.setTemplateTag("actionType", userAction);
-          tempDraft.setTemplateTag(
-            "selectedTasks",
-            JSON.stringify(selectedTasks)
-          );
-          tempDraft.update();
-
-          // Queue the generic executor action with tempDraft
-          let executorAction = Action.find("Generic Executor");
-          if (executorAction) {
-            app.queueAction(executorAction, tempDraft);
-            logCustomMessage("Queued Todoist Executor action");
-          } else {
-            alert("Executor action 'Todoist Executor' not found.");
-          }
+          // Call our new helper directly in GenericTaskProcessor
+          processSelectedTasks(userAction, selectedTasks);
+          logCustomMessage("Processed selected tasks via library function.");
         } else {
           logCustomMessage("User cancelled the action prompt.");
         }

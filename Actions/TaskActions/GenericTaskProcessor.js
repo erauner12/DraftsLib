@@ -29,16 +29,25 @@ function GenericTaskProcessor_run() {
     function logTodoistCallResult(actionDescription, success) {
       if (success) {
         console.log(actionDescription + " succeeded.");
-        console.log("Todoist lastResponse:", JSON.stringify(todoist.lastResponse));
+        console.log(
+          "Todoist lastResponse:",
+          JSON.stringify(todoist.lastResponse)
+        );
       } else {
         console.log(actionDescription + " failed.");
-        let errorMsg = todoist.lastError ? todoist.lastError : "No error message.";
+        let errorMsg = todoist.lastError
+          ? todoist.lastError
+          : "No error message.";
         let responseMsg = JSON.stringify(todoist.lastResponse);
         console.log("Todoist lastError:", errorMsg);
         console.log("Todoist lastResponse:", responseMsg);
         alert(
-          "Action \"" + actionDescription + "\" failed.\\n\\nError: " +
-          errorMsg + "\\nResponse: " + responseMsg
+          'Action "' +
+            actionDescription +
+            '" failed.\\n\\nError: ' +
+            errorMsg +
+            "\\nResponse: " +
+            responseMsg
         );
       }
       return success;
@@ -58,11 +67,17 @@ function GenericTaskProcessor_run() {
         console.log("Todoist lastError: " + errorMsg);
         console.log("Todoist lastResponse: " + responseMsg);
         alert(
-          "Action \"" + actionDescription + "\" failed.\\n\\nError: " +
-          errorMsg + "\\nResponse: " + responseMsg
+          'Action "' +
+            actionDescription +
+            '" failed.\\n\\nError: ' +
+            errorMsg +
+            "\\nResponse: " +
+            responseMsg
         );
       }
-      console.log("Todoist lastResponse: " + JSON.stringify(todoist.lastResponse));
+      console.log(
+        "Todoist lastResponse: " + JSON.stringify(todoist.lastResponse)
+      );
       return success;
     }
 
@@ -90,7 +105,9 @@ function GenericTaskProcessor_run() {
         case "Complete Tasks":
           return true;
         case "Move Deadline":
-          return jsonData.newDueDate !== undefined && jsonData.newDueDate !== null;
+          return (
+            jsonData.newDueDate !== undefined && jsonData.newDueDate !== null
+          );
         default:
           return false;
       }
@@ -107,7 +124,9 @@ function GenericTaskProcessor_run() {
     while (true) {
       let currentDraft = editor.draft;
       if (!currentDraft || !currentDraft.hasTag("task-processing")) {
-        console.log("Current draft not valid or no longer task-processing. Finding next...");
+        console.log(
+          "Current draft not valid or no longer task-processing. Finding next..."
+        );
         processingDrafts = getTaskProcessingDrafts();
         if (processingDrafts.length === 0) {
           console.log("No more task-processing drafts.");
@@ -119,7 +138,8 @@ function GenericTaskProcessor_run() {
 
       let draftContentLines = currentDraft.content.split("\\n");
       let taskIdLine = draftContentLines[0].trim();
-      let jsonDataLine = (draftContentLines.length >= 2) ? draftContentLines[1].trim() : null;
+      let jsonDataLine =
+        draftContentLines.length >= 2 ? draftContentLines[1].trim() : null;
 
       let taskId = taskIdLine.replace("task_", "");
       console.log("Extracted taskId: " + taskId);
@@ -143,14 +163,20 @@ function GenericTaskProcessor_run() {
 
       let taskData = todoist.getTask(taskId);
       if (!taskData) {
-        console.log("Failed to fetch Todoist data for task " + taskId + ". Trashing draft.");
+        console.log(
+          "Failed to fetch Todoist data for task " +
+            taskId +
+            ". Trashing draft."
+        );
         let errorMsg = todoist.lastError || "No error message.";
         let responseMsg = JSON.stringify(todoist.lastResponse);
         console.log("Todoist lastError:", errorMsg);
         console.log("Todoist lastResponse:", responseMsg);
         alert(
-          "Failed to fetch task data.\\n\\nError: " + errorMsg +
-          "\\nResponse: " + responseMsg
+          "Failed to fetch task data.\\n\\nError: " +
+            errorMsg +
+            "\\nResponse: " +
+            responseMsg
         );
         currentDraft.isTrashed = true;
         currentDraft.update();
@@ -163,7 +189,10 @@ function GenericTaskProcessor_run() {
         continue;
       } else {
         console.log("Successfully fetched data for task " + taskId + ".");
-        console.log("Todoist lastResponse:", JSON.stringify(todoist.lastResponse));
+        console.log(
+          "Todoist lastResponse:",
+          JSON.stringify(todoist.lastResponse)
+        );
       }
 
       let commentsArray = todoist.getComments({ task_id: taskId });
@@ -185,7 +214,7 @@ function GenericTaskProcessor_run() {
         rescheduleToday: tags.includes("reschedule-today"),
         completeTasks: tags.includes("complete-tasks"),
         moveDeadline: tags.includes("move-deadline"),
-        metadata: jsonData
+        metadata: jsonData,
       };
 
       if (canProcessAutomatically(jsonData)) {
@@ -194,10 +223,11 @@ function GenericTaskProcessor_run() {
 
         switch (jsonData.action) {
           case "Assign Duration":
-            let updatedContent = taskData.content + " (🕒 " + jsonData.duration + " min)";
+            let updatedContent =
+              taskData.content + " (🕒 " + jsonData.duration + " min)";
             success = processTaskAction("Assigning duration", () => {
               return todoist.updateTask(taskId, {
-                content: updatedContent
+                content: updatedContent,
               });
             });
             break;
@@ -205,41 +235,50 @@ function GenericTaskProcessor_run() {
           case "Assign Time & Duration":
             let todayDate = new Date().toISOString().split("T")[0];
             let dueDateTime = todayDate + "T" + jsonData.dueTime + ":00";
-            let updatedContentTime = taskData.content + " (🕒 " + jsonData.duration + " min)";
+            let updatedContentTime =
+              taskData.content + " (🕒 " + jsonData.duration + " min)";
             success = processTaskAction("Assigning time & duration", () => {
               return todoist.updateTask(taskId, {
                 content: updatedContentTime,
-                due_datetime: dueDateTime
+                due_datetime: dueDateTime,
               });
             });
             break;
 
           case "Reschedule to Today":
-            success = processTaskAction("Rescheduling to today", () => {
-              return todoist.updateTask(taskId, {
-                content: taskData.content,
-                due_string: "today"
-              });
-            });
+            console.log(
+              "Calling processSelectedTasks for 'Reschedule to Today'..."
+            );
+            processSelectedTasks("Reschedule to Today", [
+              { id: taskId, content: taskData.content },
+            ]);
+            success = true;
             break;
 
           case "Complete Tasks":
           case "Complete Task":
-            success = processTaskAction("Completing task", () => {
-              return todoist.closeTask(taskId);
-            });
+            console.log("Calling processSelectedTasks for 'Complete Tasks'...");
+            // We'll unify both as "Complete Tasks" for convenience
+            processSelectedTasks("Complete Tasks", [
+              { id: taskId, content: taskData.content },
+            ]);
+            success = true;
             break;
 
           case "Move Deadline":
             success = processTaskAction("Moving deadline", () => {
               return todoist.updateTask(taskId, {
-                due_string: jsonData.newDueDate
+                due_string: jsonData.newDueDate,
               });
             });
             break;
 
           default:
-            console.log("Action \"" + jsonData.action + "\" is not recognized for automatic processing.");
+            console.log(
+              'Action "' +
+                jsonData.action +
+                '" is not recognized for automatic processing.'
+            );
             break;
         }
 
@@ -282,17 +321,27 @@ function GenericTaskProcessor_run() {
           console.log("Showing Add Comment prompt...");
           if (cPrompt.show() && cPrompt.buttonPressed === "OK") {
             let commentText = cPrompt.fieldValues["comment"];
-            console.log("Attempting to add comment: \"" + commentText + "\" to task " + taskId + "...");
+            console.log(
+              'Attempting to add comment: "' +
+                commentText +
+                '" to task ' +
+                taskId +
+                "..."
+            );
             let res = todoist.createComment({
               task_id: taskId,
-              content: commentText
+              content: commentText,
             });
             logTodoistCallResult("Adding comment", !!res);
           } else {
             console.log("Comment prompt cancelled by user.");
           }
         } else if (action === "Modify Task") {
-          let modifiedValues = showModifyPrompt(fields.title, fields.due, fields.comments);
+          let modifiedValues = showModifyPrompt(
+            fields.title,
+            fields.due,
+            fields.comments
+          );
           if (modifiedValues) {
             fields = modifiedValues;
             continue;
@@ -309,7 +358,7 @@ function GenericTaskProcessor_run() {
             success = processTaskAction("Rescheduling task", () => {
               return todoist.updateTask(taskId, {
                 content: taskData.content,
-                due_string: dueString
+                due_string: dueString,
               });
             });
           }
@@ -322,7 +371,7 @@ function GenericTaskProcessor_run() {
             success = processTaskAction("Moving deadline", () => {
               return todoist.updateTask(taskId, {
                 content: taskData.content,
-                due_string: jsonData.newDueDate
+                due_string: jsonData.newDueDate,
               });
             });
           } else {
@@ -341,24 +390,36 @@ function GenericTaskProcessor_run() {
               }
             }
             if (newDueDate) {
-              console.log("Attempting to update deadline for task " + taskId + " to \"" + newDueDate + "\"...");
+              console.log(
+                "Attempting to update deadline for task " +
+                  taskId +
+                  ' to "' +
+                  newDueDate +
+                  '"...'
+              );
               let r = todoist.updateTask(taskId, {
                 content: taskData.content,
-                due_string: newDueDate
+                due_string: newDueDate,
               });
               logTodoistCallResult("Updating deadline", !!r);
             }
           }
         } else if (action === "Assign Duration") {
           if (jsonData && jsonData.duration) {
-            let updatedContent = taskData.content + " (🕒 " + jsonData.duration + " min)";
-            console.log("Using duration from metadata: " + jsonData.duration + " min");
+            let updatedContent =
+              taskData.content + " (🕒 " + jsonData.duration + " min)";
+            console.log(
+              "Using duration from metadata: " + jsonData.duration + " min"
+            );
             let result = todoist.updateTask(taskId, {
-              content: updatedContent
+              content: updatedContent,
             });
             logTodoistCallResult("Assigning duration", !!result);
           } else {
-            let existingDuration = getScopedTagValue(currentDraft, "duration::");
+            let existingDuration = getScopedTagValue(
+              currentDraft,
+              "duration::"
+            );
             let duration = existingDuration;
             if (!duration) {
               let durPrompt = new Prompt();
@@ -373,10 +434,17 @@ function GenericTaskProcessor_run() {
               }
             }
             if (duration) {
-              let updatedContent = taskData.content + " (🕒 " + duration + " min)";
-              console.log("Attempting to assign duration to task " + taskId + ": \"" + updatedContent + "\"");
+              let updatedContent =
+                taskData.content + " (🕒 " + duration + " min)";
+              console.log(
+                "Attempting to assign duration to task " +
+                  taskId +
+                  ': "' +
+                  updatedContent +
+                  '"'
+              );
               let result = todoist.updateTask(taskId, {
-                content: updatedContent
+                content: updatedContent,
               });
               logTodoistCallResult("Assigning duration", !!result);
             }
@@ -415,17 +483,28 @@ function GenericTaskProcessor_run() {
           if (dueTime && duration) {
             let todayDate = new Date().toISOString().split("T")[0];
             let dueDateTime = todayDate + "T" + dueTime + ":00";
-            let updatedContent = taskData.content + " (🕒 " + duration + " min)";
-            console.log("Attempting to assign time & duration to task " + taskId + ": due at " + dueDateTime + ", \"" + updatedContent + "\"");
+            let updatedContent =
+              taskData.content + " (🕒 " + duration + " min)";
+            console.log(
+              "Attempting to assign time & duration to task " +
+                taskId +
+                ": due at " +
+                dueDateTime +
+                ', "' +
+                updatedContent +
+                '"'
+            );
             let result = todoist.updateTask(taskId, {
               content: updatedContent,
-              due_datetime: dueDateTime
+              due_datetime: dueDateTime,
             });
             logTodoistCallResult("Assigning time & duration", !!result);
           }
         }
 
-        console.log("Showing post-processing prompt (Archive/Trash/Keep/Re-Run)...");
+        console.log(
+          "Showing post-processing prompt (Archive/Trash/Keep/Re-Run)..."
+        );
         let finalPrompt = new Prompt();
         finalPrompt.title = "Post-Processing";
         finalPrompt.message = "What do you want to do with this draft?";
@@ -471,137 +550,188 @@ function GenericTaskProcessor_run() {
           }
         }
       }
+    }
 
-      // Nested function definitions from original gist for user prompting:
-      function showMainPrompt(taskData, commentsText, scenario) {
-        let p = new Prompt();
-        p.title = "Task Review & Action";
-        p.message = "Review the task details below and select an action.";
+    // Nested function definitions from original gist for user prompting:
+    function showMainPrompt(taskData, commentsText, scenario) {
+      let p = new Prompt();
+      p.title = "Task Review & Action";
+      p.message = "Review the task details below and select an action.";
 
-        let dueInfo = "None";
-        if (taskData.due && taskData.due.string) {
-          dueInfo = taskData.due.string;
-          if (taskData.due.datetime) {
-            dueInfo += " (" + taskData.due.datetime + ")";
-          } else if (taskData.due.date) {
-            dueInfo += " (" + taskData.due.date + ")";
-          }
+      let dueInfo = "None";
+      if (taskData.due && taskData.due.string) {
+        dueInfo = taskData.due.string;
+        if (taskData.due.datetime) {
+          dueInfo += " (" + taskData.due.datetime + ")";
+        } else if (taskData.due.date) {
+          dueInfo += " (" + taskData.due.date + ")";
         }
-
-        p.addTextField("title", "Title", taskData.content);
-        p.fieldValues["title"] = taskData.content;
-        p.addTextField("due", "Due Info", dueInfo);
-        p.fieldValues["due"] = dueInfo;
-        p.addTextView("comments", "Comments", commentsText);
-        p.fieldValues["comments"] = commentsText;
-
-        p.addButton("Modify Task");
-        p.addButton("Add Comment");
-        p.addButton("Open Task Link");
-        p.addButton("Skip");
-        p.addButton("Cancel");
-
-        if (scenario.isOverdue) {
-          p.addButton("Reschedule");
-          if (scenario.completeTasks) p.addButton("Complete Task");
-        } else if (scenario.isDeadline) {
-          if (scenario.moveDeadline) p.addButton("Move Deadline");
-        } else if (scenario.isAssignDuration) {
-          p.addButton("Assign Duration");
-        } else if (scenario.isAssignTimeDuration) {
-          p.addButton("Assign Time & Duration");
-        } else {
-          p.addButton("Complete Task");
-        }
-
-        console.log("Showing main prompt...");
-        if (!p.show()) {
-          console.log("User cancelled at main prompt.");
-          return { action: null };
-        }
-
-        let choice = p.buttonPressed;
-        console.log("User selected: " + choice);
-
-        return {
-          action: choice,
-          fields: {
-            title: p.fieldValues["title"],
-            due: p.fieldValues["due"],
-            comments: p.fieldValues["comments"]
-          }
-        };
       }
 
-      function showModifyPrompt(title, dueInfo, commentsText) {
-        let modifyPrompt = new Prompt();
-        modifyPrompt.title = "Modify Task";
-        modifyPrompt.message = "Update the fields below as needed and press 'Save Changes'.";
-        modifyPrompt.addTextField("title", "Title", title);
-        modifyPrompt.addTextField("due", "Due Info", dueInfo);
-        modifyPrompt.addTextView("comments", "Comments", commentsText);
+      p.addTextField("title", "Title", taskData.content);
+      p.fieldValues["title"] = taskData.content;
+      p.addTextField("due", "Due Info", dueInfo);
+      p.fieldValues["due"] = dueInfo;
+      p.addTextView("comments", "Comments", commentsText);
+      p.fieldValues["comments"] = commentsText;
 
-        modifyPrompt.addButton("Save Changes");
-        modifyPrompt.addButton("Cancel");
+      p.addButton("Modify Task");
+      p.addButton("Add Comment");
+      p.addButton("Open Task Link");
+      p.addButton("Skip");
+      p.addButton("Cancel");
 
-        console.log("Showing modify task prompt...");
-        if (!modifyPrompt.show()) {
-          console.log("User cancelled modify prompt.");
-          return null;
-        }
-
-        if (modifyPrompt.buttonPressed === "Cancel") {
-          console.log("User cancelled at modify prompt.");
-          return null;
-        }
-
-        return {
-          title: modifyPrompt.fieldValues["title"],
-          due: modifyPrompt.fieldValues["due"],
-          comments: modifyPrompt.fieldValues["comments"]
-        };
+      if (scenario.isOverdue) {
+        p.addButton("Reschedule");
+        if (scenario.completeTasks) p.addButton("Complete Task");
+      } else if (scenario.isDeadline) {
+        if (scenario.moveDeadline) p.addButton("Move Deadline");
+      } else if (scenario.isAssignDuration) {
+        p.addButton("Assign Duration");
+      } else if (scenario.isAssignTimeDuration) {
+        p.addButton("Assign Time & Duration");
+      } else {
+        p.addButton("Complete Task");
       }
 
-      function showReschedulePrompt() {
-        let rp = new Prompt();
-        rp.title = "Reschedule Task";
-        rp.message = "Pick a common option or choose 'Custom' to enter a custom due string:";
-        rp.addButton("Today");
-        rp.addButton("Tomorrow");
-        rp.addButton("Next Week");
-        rp.addButton("Custom");
-        rp.addButton("Cancel");
+      console.log("Showing main prompt...");
+      if (!p.show()) {
+        console.log("User cancelled at main prompt.");
+        return { action: null };
+      }
 
-        if (!rp.show()) {
-          console.log("User cancelled reschedule prompt.");
-          return null;
-        }
+      let choice = p.buttonPressed;
+      console.log("User selected: " + choice);
 
-        let choice = rp.buttonPressed;
-        console.log("Reschedule choice: " + choice);
+      return {
+        action: choice,
+        fields: {
+          title: p.fieldValues["title"],
+          due: p.fieldValues["due"],
+          comments: p.fieldValues["comments"],
+        },
+      };
+    }
 
-        if (choice === "Cancel") return null;
-        if (choice === "Today") return "today";
-        if (choice === "Tomorrow") return "tomorrow";
-        if (choice === "Next Week") return "next week";
+    function showModifyPrompt(title, dueInfo, commentsText) {
+      let modifyPrompt = new Prompt();
+      modifyPrompt.title = "Modify Task";
+      modifyPrompt.message =
+        "Update the fields below as needed and press 'Save Changes'.";
+      modifyPrompt.addTextField("title", "Title", title);
+      modifyPrompt.addTextField("due", "Due Info", dueInfo);
+      modifyPrompt.addTextView("comments", "Comments", commentsText);
 
-        if (choice === "Custom") {
-          let cp = new Prompt();
-          cp.title = "Custom Due";
-          cp.message = "Enter a natural language due string (e.g. 'in 2 days', 'Friday 5pm'):";
-          cp.addTextField("dueCustom", "Due String", "");
-          cp.addButton("OK");
-          cp.addButton("Cancel");
-          if (!cp.show() || cp.buttonPressed === "Cancel") {
-            console.log("User cancelled custom due prompt.");
-            return null;
-          }
-          return cp.fieldValues["dueCustom"];
-        }
+      modifyPrompt.addButton("Save Changes");
+      modifyPrompt.addButton("Cancel");
 
+      console.log("Showing modify task prompt...");
+      if (!modifyPrompt.show()) {
+        console.log("User cancelled modify prompt.");
         return null;
       }
 
-    })();
-}
+      if (modifyPrompt.buttonPressed === "Cancel") {
+        console.log("User cancelled at modify prompt.");
+        return null;
+      }
 
+      return {
+        title: modifyPrompt.fieldValues["title"],
+        due: modifyPrompt.fieldValues["due"],
+        comments: modifyPrompt.fieldValues["comments"],
+      };
+    }
+
+    function showReschedulePrompt() {
+      let rp = new Prompt();
+      rp.title = "Reschedule Task";
+      rp.message =
+        "Pick a common option or choose 'Custom' to enter a custom due string:";
+      rp.addButton("Today");
+      rp.addButton("Tomorrow");
+      rp.addButton("Next Week");
+      rp.addButton("Custom");
+      rp.addButton("Cancel");
+
+      if (!rp.show()) {
+        console.log("User cancelled reschedule prompt.");
+        return null;
+      }
+
+      let choice = rp.buttonPressed;
+      console.log("Reschedule choice: " + choice);
+
+      if (choice === "Cancel") return null;
+      if (choice === "Today") return "today";
+      if (choice === "Tomorrow") return "tomorrow";
+      if (choice === "Next Week") return "next week";
+
+      if (choice === "Custom") {
+        let cp = new Prompt();
+        cp.title = "Custom Due";
+        cp.message =
+          "Enter a natural language due string (e.g. 'in 2 days', 'Friday 5pm'):";
+        cp.addTextField("dueCustom", "Due String", "");
+        cp.addButton("OK");
+        cp.addButton("Cancel");
+        if (!cp.show() || cp.buttonPressed === "Cancel") {
+          console.log("User cancelled custom due prompt.");
+          return null;
+        }
+        return cp.fieldValues["dueCustom"];
+      }
+
+      return null;
+    }
+  })();
+
+  /**
+   * processSelectedTasks(actionType, tasks)
+   * This function handles immediate actions on the passed tasks array
+   * without creating ephemeral drafts or queueing a separate action.
+   */
+  function processSelectedTasks(actionType, tasks) {
+    console.log("processSelectedTasks called with actionType: " + actionType);
+    if (!tasks || tasks.length === 0) {
+      console.log("No tasks provided to processSelectedTasks.");
+      return;
+    }
+
+    // Initialize Todoist credentials
+    const credential = Credential.create("Todoist", "Todoist API Token");
+    credential.addPasswordField("apiToken", "API Token");
+    credential.authorize();
+    let todoist = Todoist.create();
+    todoist.token = credential.getValue("apiToken");
+
+    if (actionType === "Reschedule to Today") {
+      console.log("Rescheduling tasks to today...");
+      for (let task of tasks) {
+        let success = processTaskAction("Rescheduling to today", () => {
+          return todoist.updateTask(task.id, {
+            content: task.content,
+            due_string: "today",
+          });
+        });
+        if (!success) {
+          console.log("Failed to reschedule task with ID: " + task.id);
+        }
+      }
+    } else if (actionType === "Complete Tasks") {
+      console.log("Completing tasks...");
+      for (let task of tasks) {
+        let success = processTaskAction("Completing task", () => {
+          return todoist.closeTask(task.id);
+        });
+        if (!success) {
+          console.log("Failed to complete task with ID: " + task.id);
+        }
+      }
+    } else {
+      console.log(
+        "processSelectedTasks did not handle actionType: " + actionType
+      );
+    }
+  }
+}
