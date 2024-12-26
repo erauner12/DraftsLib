@@ -50,7 +50,10 @@ if (typeof globalThis.myConfig === "undefined") {
 
 // 3) Load action-specific scripts
 // Task-related
-require("Actions/TaskActions/ManageOverdueTasks.js");
+require("Actions/TaskActions/GenericTaskProcessor.js");
+
+// Also load the scheduler entry point so we can call SchedulerEntryPoint_run()
+require("Actions/SchedulerEntryPoint.js");
 require("Actions/TaskActions/ProjectMaintenance.js");
 
 // Meeting-related

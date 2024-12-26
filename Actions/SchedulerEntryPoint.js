@@ -4,18 +4,30 @@
  * This script determines which DraftsLib function to call
  * based on the current action's name from the global `action` object.
  */
+/**
+	•	SchedulerEntryPoint_run
+	•	@param {string} actionName - The name of the action we want to route.
+	•
+	•	Call it from a Drafts action like:
+	•
+	•
+	•	require(“MyDraftsLoader.js”);
+	•	SchedulerEntryPoint_run(“Assign Duration”);
+	•
+*/
+function SchedulerEntryPoint_run(actionName) {
+    console.log("SchedulerEntryPoint_run() invoked with action name: " + actionName);
 
-function SchedulerEntryPoint_run() {
-  console.log(
-    "SchedulerEntryPoint_run() invoked with action name: " + action.name
-  );
-
-  // Branch your logic on the name of the current action:
-  if (action.name === "Manage Overdue Tasks") {
-    ManageOverdueTasks_run();
-  } else if (action.name === "Assign Duration") {
-    console.log("Placeholder: handle 'Assign Duration' logic here.");
-  } else {
-    console.log("No specialized handling for action: " + action.name);
-  }
+    switch (actionName) {
+      case "Manage Overdue Tasks":
+        ManageOverdueTasks_run();
+        break;
+      case "Assign Duration":
+        // Placeholder or actual logic for "Assign Duration"
+        console.log("Placeholder: handle 'Assign Duration' logic here.");
+        break;
+      default:
+        console.log("No specialized handling for action: " + actionName);
+        break;
+    }
 }
