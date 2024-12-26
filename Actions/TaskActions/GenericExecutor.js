@@ -72,15 +72,16 @@ function GenericExecutor_run() {
         }
       }
 
-      if (createdDrafts > 0) {
-        let processorAction = Action.find("Generic Task Processor");
-        if (processorAction) {
-          app.queueAction(processorAction);
-          console.log("Queued Generic Task Processor action");
-        } else {
-          console.log("Generic Task Processor action not found.");
-        }
-      }
+      // Keep commented out for now, don't remove though
+      // if (createdDrafts > 0) {
+      //   let processorAction = Action.find("Generic Processor");
+      //   if (processorAction) {
+      //     app.queueAction(processorAction);
+      //     console.log("Queued Generic Processor action");
+      //   } else {
+      //     console.log("Generic Processor action not found.");
+      //   }
+      // }
     }
 
     // Clean up temporary draft

@@ -50,19 +50,30 @@ if (typeof globalThis.myConfig === "undefined") {
 
 // 3) Load action-specific scripts
 // Task-related
-require("Actions/TaskActions/GenericTaskProcessor.js");
-
-// Also load the scheduler entry point so we can call SchedulerEntryPoint_run()
-require("Actions/SchedulerEntryPoint.js");
+/**
+ * ---------------------------------------
+ * Task-related scripts
+ * ---------------------------------------
+ */
+require("Actions/TaskActions/ManageOverdueTasks.js");
 require("Actions/TaskActions/ProjectMaintenance.js");
-
-// Meeting-related
-require("Actions/MeetingActions/AgendaBuilder.js");
-require("Actions/MeetingActions/MeetingNotes.js");
-
-// 5) Load new generic scripts
 require("Actions/TaskActions/GenericExecutor.js");
 require("Actions/TaskActions/GenericTaskProcessor.js");
+
+/**
+ * ---------------------------------------
+ * Scheduler Entry Point
+ * ---------------------------------------
+ */
+require("Actions/SchedulerEntryPoint.js");
+
+/**
+ * ---------------------------------------
+ * Meeting-related
+ * ---------------------------------------
+ */
+require("Actions/MeetingActions/AgendaBuilder.js");
+require("Actions/MeetingActions/MeetingNotes.js");
 
 // 4) Optionally define some “global test functions” or convenience wrappers
 
