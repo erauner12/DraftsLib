@@ -20,7 +20,7 @@ if (typeof globalThis.LOG_LEVELS === "undefined") {
 
 // Default to "info" if not set
 if (typeof globalThis.CURRENT_LOG_LEVEL === "undefined") {
-  globalThis.CURRENT_LOG_LEVEL = globalThis.LOG_LEVELS["info"];
+  globalThis.CURRENT_LOG_LEVEL = globalThis.LOG_LEVELS["debug"];
 }
 
 /**
