@@ -15,19 +15,29 @@
 	•	SchedulerEntryPoint_run(“Assign Duration”);
 	•
 */
+/**
+ * SchedulerEntryPoint_run
+ * Enhanced with additional logging for clearer routing steps.
+ * @param {string} actionName - The name of the action we want to route.
+ */
 function SchedulerEntryPoint_run(actionName) {
-    console.log("SchedulerEntryPoint_run() invoked with action name: " + actionName);
+  logCustomMessage("SchedulerEntryPoint_run() invoked with action name: " + actionName, "info");
 
-    switch (actionName) {
-      case "Manage Overdue Tasks":
-        ManageOverdueTasks_run();
-        break;
-      case "Assign Duration":
-        // Placeholder or actual logic for "Assign Duration"
-        console.log("Placeholder: handle 'Assign Duration' logic here.");
-        break;
-      default:
-        console.log("No specialized handling for action: " + actionName);
-        break;
-    }
+  switch (actionName) {
+    case "Manage Overdue Tasks":
+      logCustomMessage("Routing to ManageOverdueTasks_run()", "info");
+      ManageOverdueTasks_run();
+      break;
+
+    case "Assign Duration":
+      logCustomMessage("Routing to placeholder for 'Assign Duration' logic.", "info");
+      // Placeholder or actual logic for "Assign Duration"
+      break;
+
+    default:
+      logCustomMessage("No specialized handling for action: " + actionName, "warn");
+      break;
+  }
+
+  logCustomMessage("SchedulerEntryPoint_run() complete for action: " + actionName, "info");
 }
