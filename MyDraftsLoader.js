@@ -70,6 +70,14 @@ function loaderTestFunction() {
   logCustomMessage("Called from loaderTestFunction()");
 }
 
+// Loaded config: My Hybrid Drafts System (v0.1)
+// Log level set to: info
+// Script step completed.
+// loaderTestFunction() says hello!
+// someSharedHelperFunction() has been called!
+// [INFO] Called from loaderTestFunction()
+// Script step completed.
+
 function loaderCustomDateCheck() {
   const dateStr = getTodayDateString();
   console.log("Loader's custom date check: " + dateStr);
