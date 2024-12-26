@@ -57,8 +57,9 @@ if (typeof globalThis.myConfig === "undefined") {
  */
 require("Actions/TaskActions/ManageOverdueTasks.js");
 require("Actions/TaskActions/ProjectMaintenance.js");
-require("Actions/TaskActions/GenericExecutor.js");
-require("Actions/TaskActions/GenericTaskProcessor.js");
+// Replaced the old 'GenericExecutor' and 'GenericTaskProcessor' with the new modules
+require("Actions/TaskActions/ExecutorLib.js");
+require("Actions/TaskActions/TaskProcessorLib.js");
 
 /**
  * ---------------------------------------

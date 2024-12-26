@@ -1,11 +1,12 @@
 /**
- * GenericTaskProcessor.js
- * Integrated from the previous processor.js gist.
+ * TaskProcessorLib.js
+ *
+ * Shared library module that encapsulates the logic previously in GenericTaskProcessor.js.
  */
 
-function GenericTaskProcessor_run() {
+function TaskProcessorLib_process() {
   (() => {
-    console.log("Generic Task Processor started.");
+    console.log("Task Processor started.");
 
     const credential = Credential.create("Todoist", "Todoist API Token");
     credential.addPasswordField("apiToken", "API Token");
@@ -306,25 +307,31 @@ function GenericTaskProcessor_run() {
         } else if (action === "Reschedule") {
           let dueString = showReschedulePrompt();
           if (dueString) {
-            success = processTaskAction("Rescheduling task", () => {
+            let success = processTaskAction("Rescheduling task", () => {
               return todoist.updateTask(taskId, {
                 content: taskData.content,
                 due_string: dueString
               });
             });
+            if (!success) {
+              console.log("Reschedule attempt failed, continuing loop.");
+              continue;
+            }
           }
         } else if (action === "Complete Task") {
-          success = processTaskAction("Completing task", () => {
+          let success = processTaskAction("Completing task", () => {
             return todoist.closeTask(taskId);
           });
+          if (!success) continue;
         } else if (action === "Move Deadline") {
           if (jsonData && jsonData.newDueDate) {
-            success = processTaskAction("Moving deadline", () => {
+            let success = processTaskAction("Moving deadline", () => {
               return todoist.updateTask(taskId, {
                 content: taskData.content,
                 due_string: jsonData.newDueDate
               });
             });
+            if (!success) continue;
           } else {
             let existingDueDate = getScopedTagValue(currentDraft, "due-date::");
             let newDueDate = existingDueDate;
@@ -473,135 +480,137 @@ function GenericTaskProcessor_run() {
       }
     }
 
-    // Nested function definitions from original gist for user prompting:
+    // Nested function definitions for user prompting:
     function showMainPrompt(taskData, commentsText, scenario) {
-        let p = new Prompt();
-        p.title = "Task Review & Action";
-        p.message = "Review the task details below and select an action.";
+      let p = new Prompt();
+      p.title = "Task Review & Action";
+      p.message = "Review the task details below and select an action.";
 
-        let dueInfo = "None";
-        if (taskData.due && taskData.due.string) {
-          dueInfo = taskData.due.string;
-          if (taskData.due.datetime) {
-            dueInfo += " (" + taskData.due.datetime + ")";
-          } else if (taskData.due.date) {
-            dueInfo += " (" + taskData.due.date + ")";
-          }
+      let dueInfo = "None";
+      if (taskData.due && taskData.due.string) {
+        dueInfo = taskData.due.string;
+        if (taskData.due.datetime) {
+          dueInfo += " (" + taskData.due.datetime + ")";
+        } else if (taskData.due.date) {
+          dueInfo += " (" + taskData.due.date + ")";
         }
-
-        p.addTextField("title", "Title", taskData.content);
-        p.fieldValues["title"] = taskData.content;
-        p.addTextField("due", "Due Info", dueInfo);
-        p.fieldValues["due"] = dueInfo;
-        p.addTextView("comments", "Comments", commentsText);
-        p.fieldValues["comments"] = commentsText;
-
-        p.addButton("Modify Task");
-        p.addButton("Add Comment");
-        p.addButton("Open Task Link");
-        p.addButton("Skip");
-        p.addButton("Cancel");
-
-        if (scenario.isOverdue) {
-          p.addButton("Reschedule");
-          if (scenario.completeTasks) p.addButton("Complete Task");
-        } else if (scenario.isDeadline) {
-          if (scenario.moveDeadline) p.addButton("Move Deadline");
-        } else if (scenario.isAssignDuration) {
-          p.addButton("Assign Duration");
-        } else if (scenario.isAssignTimeDuration) {
-          p.addButton("Assign Time & Duration");
-        } else {
-          p.addButton("Complete Task");
-        }
-
-        console.log("Showing main prompt...");
-        if (!p.show()) {
-          console.log("User cancelled at main prompt.");
-          return { action: null };
-        }
-
-        let choice = p.buttonPressed;
-        console.log("User selected: " + choice);
-
-        return {
-          action: choice,
-          fields: {
-            title: p.fieldValues["title"],
-            due: p.fieldValues["due"],
-            comments: p.fieldValues["comments"]
-          }
-        };
       }
 
-      function showModifyPrompt(title, dueInfo, commentsText) {
-        let modifyPrompt = new Prompt();
-        modifyPrompt.title = "Modify Task";
-        modifyPrompt.message = "Update the fields below as needed and press 'Save Changes'.";
-        modifyPrompt.addTextField("title", "Title", title);
-        modifyPrompt.addTextField("due", "Due Info", dueInfo);
-        modifyPrompt.addTextView("comments", "Comments", commentsText);
+      p.addTextField("title", "Title", taskData.content);
+      p.fieldValues["title"] = taskData.content;
+      p.addTextField("due", "Due Info", dueInfo);
+      p.fieldValues["due"] = dueInfo;
+      p.addTextView("comments", "Comments", commentsText);
+      p.fieldValues["comments"] = commentsText;
 
-        modifyPrompt.addButton("Save Changes");
-        modifyPrompt.addButton("Cancel");
+      p.addButton("Modify Task");
+      p.addButton("Add Comment");
+      p.addButton("Open Task Link");
+      p.addButton("Skip");
+      p.addButton("Cancel");
 
-        console.log("Showing modify task prompt...");
-        if (!modifyPrompt.show()) {
-          console.log("User cancelled modify prompt.");
-          return null;
-        }
-
-        if (modifyPrompt.buttonPressed === "Cancel") {
-          console.log("User cancelled at modify prompt.");
-          return null;
-        }
-
-        return {
-          title: modifyPrompt.fieldValues["title"],
-          due: modifyPrompt.fieldValues["due"],
-          comments: modifyPrompt.fieldValues["comments"]
-        };
+      if (scenario.isOverdue) {
+        p.addButton("Reschedule");
+        if (scenario.completeTasks) p.addButton("Complete Task");
+      } else if (scenario.isDeadline) {
+        if (scenario.moveDeadline) p.addButton("Move Deadline");
+      } else if (scenario.isAssignDuration) {
+        p.addButton("Assign Duration");
+      } else if (scenario.isAssignTimeDuration) {
+        p.addButton("Assign Time & Duration");
+      } else {
+        p.addButton("Complete Task");
       }
 
-      function showReschedulePrompt() {
-        let rp = new Prompt();
-        rp.title = "Reschedule Task";
-        rp.message = "Pick a common option or choose 'Custom' to enter a custom due string:";
-        rp.addButton("Today");
-        rp.addButton("Tomorrow");
-        rp.addButton("Next Week");
-        rp.addButton("Custom");
-        rp.addButton("Cancel");
+      console.log("Showing main prompt...");
+      if (!p.show()) {
+        console.log("User cancelled at main prompt.");
+        return { action: null };
+      }
 
-        if (!rp.show()) {
-          console.log("User cancelled reschedule prompt.");
-          return null;
+      let choice = p.buttonPressed;
+      console.log("User selected: " + choice);
+
+      return {
+        action: choice,
+        fields: {
+          title: p.fieldValues["title"],
+          due: p.fieldValues["due"],
+          comments: p.fieldValues["comments"]
         }
+      };
+    }
 
-        let choice = rp.buttonPressed;
-        console.log("Reschedule choice: " + choice);
+    function showModifyPrompt(title, dueInfo, commentsText) {
+      let modifyPrompt = new Prompt();
+      modifyPrompt.title = "Modify Task";
+      modifyPrompt.message = "Update the fields below as needed and press 'Save Changes'.";
+      modifyPrompt.addTextField("title", "Title", title);
+      modifyPrompt.addTextField("due", "Due Info", dueInfo);
+      modifyPrompt.addTextView("comments", "Comments", commentsText);
 
-        if (choice === "Cancel") return null;
-        if (choice === "Today") return "today";
-        if (choice === "Tomorrow") return "tomorrow";
-        if (choice === "Next Week") return "next week";
+      modifyPrompt.addButton("Save Changes");
+      modifyPrompt.addButton("Cancel");
 
-        if (choice === "Custom") {
-          let cp = new Prompt();
-          cp.title = "Custom Due";
-          cp.message = "Enter a natural language due string (e.g. 'in 2 days', 'Friday 5pm'):";
-          cp.addTextField("dueCustom", "Due String", "");
-          cp.addButton("OK");
-          cp.addButton("Cancel");
-          if (!cp.show() || cp.buttonPressed === "Cancel") {
-            console.log("User cancelled custom due prompt.");
-            return null;
-          }
-          return cp.fieldValues["dueCustom"];
-        }
-
+      console.log("Showing modify task prompt...");
+      if (!modifyPrompt.show()) {
+        console.log("User cancelled modify prompt.");
         return null;
       }
 
-    })();
+      if (modifyPrompt.buttonPressed === "Cancel") {
+        console.log("User cancelled at modify prompt.");
+        return null;
+      }
+
+      return {
+        title: modifyPrompt.fieldValues["title"],
+        due: modifyPrompt.fieldValues["due"],
+        comments: modifyPrompt.fieldValues["comments"]
+      };
+    }
+
+    function showReschedulePrompt() {
+      let rp = new Prompt();
+      rp.title = "Reschedule Task";
+      rp.message = "Pick a common option or choose 'Custom' to enter a custom due string:";
+      rp.addButton("Today");
+      rp.addButton("Tomorrow");
+      rp.addButton("Next Week");
+      rp.addButton("Custom");
+      rp.addButton("Cancel");
+
+      if (!rp.show()) {
+        console.log("User cancelled reschedule prompt.");
+        return null;
+      }
+
+      let choice = rp.buttonPressed;
+      console.log("Reschedule choice: " + choice);
+
+      if (choice === "Cancel") return null;
+      if (choice === "Today") return "today";
+      if (choice === "Tomorrow") return "tomorrow";
+      if (choice === "Next Week") return "next week";
+
+      if (choice === "Custom") {
+        let cp = new Prompt();
+        cp.title = "Custom Due";
+        cp.message = "Enter a natural language due string (e.g. 'in 2 days', 'Friday 5pm'):";
+        cp.addTextField("dueCustom", "Due String", "");
+        cp.addButton("OK");
+        cp.addButton("Cancel");
+        if (!cp.show() || cp.buttonPressed === "Cancel") {
+          console.log("User cancelled custom due prompt.");
+          return null;
+        }
+        return cp.fieldValues["dueCustom"];
+      }
+
+      return null;
+    }
+  })();
 }
+
+// Expose the function for external usage
+globalThis.TaskProcessorLib_process = TaskProcessorLib_process;

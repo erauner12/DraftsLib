@@ -1,9 +1,10 @@
 /**
- * GenericExecutor.js
- * Integrated from the previous executor.js gist.
+ * ExecutorLib.js
+ *
+ * Shared library module that encapsulates the logic previously in GenericExecutor.js.
  */
 
-function GenericExecutor_run() {
+function ExecutorLib_execute(tempDraft) {
   // Initialize Todoist credentials
   const credential = Credential.create("Todoist", "Todoist API Token");
   credential.addPasswordField("apiToken", "API Token");
@@ -12,11 +13,10 @@ function GenericExecutor_run() {
   const TODOIST_API_TOKEN = credential.getValue("apiToken");
   let todoist = Todoist.create();
 
-  // Get the ephemeral draft and extract actionType
-  let tempDraft = draft;
+  // Extract actionType from the passed-in draft
   let actionType = tempDraft.getTemplateTag("actionType");
 
-  console.log("Generic Executor started with actionType: " + actionType);
+  console.log("ExecutorLib started with actionType: " + actionType);
 
   try {
     // Example: Clean Up Task Titles
@@ -27,7 +27,7 @@ function GenericExecutor_run() {
         console.log("Queued Clean Up Task Titles action");
       } else {
         console.log("Clean Up Task Titles action not found.");
-        context.fail("Cleanup action not found.");
+        throw new Error("Cleanup action not found.");
       }
     } else if (actionType === "Clean Up Draft Titles") {
       // Another example for a different cleanup
@@ -43,13 +43,13 @@ function GenericExecutor_run() {
       let selectedTasksData = tempDraft.getTemplateTag("selectedTasks");
       if (!selectedTasksData) {
         console.log("No selectedTasks data found in temporary context.");
-        context.fail("No tasks selected.");
+        throw new Error("No tasks selected.");
       }
 
       let selectedTasks = JSON.parse(selectedTasksData);
       if (!Array.isArray(selectedTasks) || selectedTasks.length === 0) {
         console.log("Selected tasks array is empty.");
-        context.fail("No tasks selected.");
+        throw new Error("No tasks selected.");
       }
 
       let createdDrafts = 0;
@@ -60,7 +60,7 @@ function GenericExecutor_run() {
             action: actionType,
           };
           taskDraft.content =
-            "task_" + task.id + "\n" + JSON.stringify(metadata);
+            "task_" + task.id + "\\n" + JSON.stringify(metadata);
           taskDraft.addTag("task-processing");
           taskDraft.update();
           console.log("Created processing draft for item ID: " + task.id);
@@ -88,7 +88,10 @@ function GenericExecutor_run() {
     tempDraft.isTrashed = true;
     tempDraft.update();
   } catch (error) {
-    console.log("Error in generic executor script: " + error);
-    context.fail("Error in generic executor script: " + error);
+    console.log("Error in executor library: " + error);
+    throw error;
   }
 }
+
+// Expose the function for external usage
+globalThis.ExecutorLib_execute = ExecutorLib_execute;

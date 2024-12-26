@@ -72,13 +72,8 @@ function ManageOverdueTasks_run() {
           tempDraft.update();
 
           // Queue the generic executor action with tempDraft
-          let executorAction = Action.find("Generic Executor");
-          if (executorAction) {
-            app.queueAction(executorAction, tempDraft);
-            logCustomMessage("Queued Todoist Executor action");
-          } else {
-            alert("Executor action 'Todoist Executor' not found.");
-          }
+          // Call our new ExecutorLib function directly
+          ExecutorLib_execute(tempDraft);
         } else {
           logCustomMessage("User cancelled the action prompt.");
         }
