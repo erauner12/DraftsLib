@@ -56,20 +56,11 @@ function logCustomMessage(msg, level = "info") {
 
 function debugModeAlert(msg) {
   alert("Debug Alert:\n" + msg);
-function logInfo(message) {
-  console.log("[INFO]", message);
 }
 
-/**
- * Logs a standardized message when a script step completes.
- *
- * @param {string} stepName - The name or description of the step that completed.
- */
-function logScriptStepCompleted(stepName) {
-  console.log("[STEP COMPLETED]", stepName);
+// Example for logging with date/time
+function logWithTimestamp(msg, level = "info") {
+  let now = new Date();
+  let prefix = "[" + now.toISOString() + "]";
+  logMessage(prefix + " " + msg, level);
 }
-
-module.exports = {
-  logInfo,
-  logScriptStepCompleted
-};
