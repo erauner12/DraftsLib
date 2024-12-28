@@ -3,25 +3,26 @@
 /**
  * TaskMenu.js
  * Presents a top-level function TaskMenu_run(), which shows a prompt for managing various tasks.
- * Incorporates LoggingUtils for unified logging and includes placeholders
- * for launching non-Todoist-related actions as well.
+ * Uses a global LoggingUtils reference if it's available (loaded by MyDraftsLoader).
  */
 
-// Require the LoggingUtils module from Common
-require("../../Common/LoggingUtils.js");
+// Set up a local logger reference, defaulting to a no-op if LoggingUtils is not defined
+let logger = {
+  info:  function() {},
+  warn:  function() {},
+  error: function() {}
+};
 
-// Optional: If LoggingUtils is globally defined, you can directly use LoggingUtils.info(...).
-// Otherwise, assign it to a local variable for convenience.
-let logger = typeof LoggingUtils !== "undefined" ? LoggingUtils : null;
+if (typeof LoggingUtils !== "undefined") {
+  logger = LoggingUtils;
+}
 
 /**
  * TaskMenu_run
  * Displays a prompt with options for task management, logs user selection, and calls the appropriate code.
  */
 function TaskMenu_run() {
-  if (logger) {
-    logger.info("TaskMenu: Starting menu prompt.");
-  }
+  logger.info("TaskMenu: Starting menu prompt.");
 
   const prompt = Prompt.create();
   prompt.title = "Task Management Menu";
@@ -37,16 +38,12 @@ function TaskMenu_run() {
   const didSelect = prompt.show();
 
   if (!didSelect || prompt.buttonPressed === "Cancel") {
-    if (logger) {
-      logger.info("TaskMenu: User canceled or dismissed the prompt.");
-    }
+    logger.info("TaskMenu: User canceled or dismissed the prompt.");
     context.cancel();
     return;
   }
 
-  if (logger) {
-    logger.info('TaskMenu: User selected "' + prompt.buttonPressed + '".');
-  }
+  logger.info('TaskMenu: User selected "' + prompt.buttonPressed + '".');
 
   switch (prompt.buttonPressed) {
     case "Manage Overdue Tasks":
@@ -78,15 +75,8 @@ function TaskMenu_run() {
       break;
 
     default:
-      // Fallback case, if needed
-      if (logger) {
-        logger.warn("TaskMenu: Unexpected button pressed.");
-      }
+      logger.warn("TaskMenu: Unexpected button pressed.");
       context.cancel();
       break;
   }
 }
-
-// This top-level function can be called from any script that does:
-// require("./TaskMenu.js");
-// TaskMenu_run();
