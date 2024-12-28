@@ -1,3 +1,4 @@
+"use strict";
 /**
  * MyDraftsLoader.js
  *
@@ -60,6 +61,7 @@ require("Actions/TaskActions/ProjectMaintenance.js");
 // Replaced the old 'GenericExecutor' and 'GenericTaskProcessor' with the new modules
 require("Actions/TaskActions/ExecutorLib.js");
 require("Actions/TaskActions/TaskProcessorLib.js");
+const TaskMenu = require("Actions/TaskActions/TaskMenu.js");
 
 /**
  * ---------------------------------------
@@ -110,3 +112,5 @@ if (typeof LoaderUtilityClass === "undefined") {
     }
   }
 }
+
+globalThis.TaskMenu_run = TaskMenu.TaskMenu_run;
