@@ -18,30 +18,27 @@ function TaskMenu_run() {
 
   switch (prompt.buttonPressed) {
     case "Manage Overdue Tasks":
-      // For now, this would call your ManageOverdueTasks action or code
-      // manageOverdueTasks.run();
       alert(
         "You selected to manage overdue tasks. (Placeholder for ManageOverdueTasks action.)"
       );
       break;
-
     case "Manage Deadlines":
-      // Placeholder for future functionality
       alert(
         "You selected to manage deadlines. (Placeholder for ManageDeadlines action.)"
       );
       break;
-
     case "Schedule Tasks for Tomorrow":
-      // Placeholder for future functionality
       alert(
         "You selected to schedule tasks for tomorrow. (Placeholder for scheduling tasks.)"
       );
       break;
-
     default:
-      // If no valid option is chosen or the user cancels
       context.cancel();
       break;
   }
 }
+
+// Export the function so it can be used externally
+module.exports = {
+  TaskMenu_run,
+};
