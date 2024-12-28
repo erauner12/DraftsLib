@@ -2,7 +2,9 @@
 
 /**
  * MyDraftsLoader.js
- * Loads all of the scripts needed for the custom Drafts library usage.
+const { logScriptStepCompleted } = require("./Common/LoggingUtils");
+
+logScriptStepCompleted("MyDraftsLoader script step");
  */
 
 // Ensure LoggingUtils is loaded and available globally
@@ -33,3 +35,7 @@ require("./Actions/TaskActions/TaskMenu.js");
 
 // After this, global.TaskMenu_run should be defined.
 // Additional setups or global definitions can be placed below if needed.
+
+import { logScriptStepCompleted } from "./Common/LoggingUtils";
+
+logScriptStepCompleted("MyDraftsLoader script step");
