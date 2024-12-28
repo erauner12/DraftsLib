@@ -10,7 +10,7 @@ try {
   require("./Common/LoggingUtils.js");
   // If LoggingUtils isn't already global, you can set it here
   if (typeof LoggingUtils !== "undefined") {
-    global.LoggingUtils = LoggingUtils;
+    global.Logger = LoggingUtils;
   }
 } catch (e) {
   // Fallback or error handling if LoggingUtils can't be loaded
