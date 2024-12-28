@@ -1,44 +1,44 @@
-function TaskMenu_run() {
-  const prompt = Prompt.create();
-  prompt.title = "Task Management Menu";
-  prompt.message = "Select an option to manage your tasks.";
+"use strict";
+// TaskMenu.js
+// Define TaskMenu_run as a global function for use in Drafts.
 
-  // Add different task management options
-  prompt.addButton("Manage Overdue Tasks");
-  prompt.addButton("Manage Deadlines");
-  prompt.addButton("Schedule Tasks for Tomorrow");
-  prompt.addButton("Cancel", "cancel", true);
+(() => {
+  global.TaskMenu_run = function () {
+    const prompt = Prompt.create();
+    prompt.title = "Task Management Menu";
+    prompt.message = "Select an option to manage your tasks.";
 
-  const didSelect = prompt.show();
+    prompt.addButton("Manage Overdue Tasks");
+    prompt.addButton("Manage Deadlines");
+    prompt.addButton("Schedule Tasks for Tomorrow");
+    prompt.addButton("Cancel", "cancel", true);
 
-  if (!didSelect || prompt.buttonPressed === "Cancel") {
-    context.cancel();
-    return;
-  }
+    const didSelect = prompt.show();
 
-  switch (prompt.buttonPressed) {
-    case "Manage Overdue Tasks":
-      alert(
-        "You selected to manage overdue tasks. (Placeholder for ManageOverdueTasks action.)"
-      );
-      break;
-    case "Manage Deadlines":
-      alert(
-        "You selected to manage deadlines. (Placeholder for ManageDeadlines action.)"
-      );
-      break;
-    case "Schedule Tasks for Tomorrow":
-      alert(
-        "You selected to schedule tasks for tomorrow. (Placeholder for scheduling tasks.)"
-      );
-      break;
-    default:
+    if (!didSelect || prompt.buttonPressed === "Cancel") {
       context.cancel();
-      break;
-  }
-}
+      return;
+    }
 
-// Export the function so it can be used externally
-module.exports = {
-  TaskMenu_run,
-};
+    switch (prompt.buttonPressed) {
+      case "Manage Overdue Tasks":
+        alert(
+          "You selected to manage overdue tasks. (Placeholder for ManageOverdueTasks action.)"
+        );
+        break;
+      case "Manage Deadlines":
+        alert(
+          "You selected to manage deadlines. (Placeholder for ManageDeadlines action.)"
+        );
+        break;
+      case "Schedule Tasks for Tomorrow":
+        alert(
+          "You selected to schedule tasks for tomorrow. (Placeholder for scheduling tasks.)"
+        );
+        break;
+      default:
+        context.cancel();
+        break;
+    }
+  };
+})();
