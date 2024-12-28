@@ -2,64 +2,66 @@
 
 /**
  * TaskMenu.js
- * Exposes a TaskMenu_run function to show a menu of task-related options.
+ * Exposes a top-level function TaskMenu_run(), which shows a prompt for task management.
  *
- * Extend or edit the prompt options inside `TaskMenu_run` to add new actions.
+ * Usage (from another script):
+ * require("./TaskMenu.js");
+ * TaskMenu_run();
  */
 
-(function () {
-  // Local references to each action's script can be imported here if needed:
-  // const ManageOverdueTasks = require("./ManageOverdueTasks.js");
-  // const ProjectMaintenance = require("./ProjectMaintenance.js");
-  // etc.
+/**
+ * TaskMenu_run
+ * Displays a prompt with options for managing tasks, and handles button selections.
+ */
+function TaskMenu_run() {
+  const prompt = Prompt.create();
+  prompt.title = "Task Management Menu";
+  prompt.message = "Select an option to manage your tasks:";
 
-  // Show a prompt with multiple choices and handle them
-  function TaskMenu_run() {
-    const prompt = Prompt.create();
-    prompt.title = "Task Management Menu";
-    prompt.message = "Select an option to manage your tasks:";
+  prompt.addButton("Manage Overdue Tasks");
+  prompt.addButton("Manage Deadlines");
+  prompt.addButton("Schedule Tasks for Tomorrow");
+  prompt.addButton("Cancel", "cancel", true);
 
-    prompt.addButton("Manage Overdue Tasks");
-    prompt.addButton("Manage Deadlines");
-    prompt.addButton("Schedule Tasks for Tomorrow");
-    prompt.addButton("Cancel", "cancel", true);
+  const didSelect = prompt.show();
 
-    const didSelect = prompt.show();
-
-    // If user cancels or dismisses the prompt, stop
-    if (!didSelect || prompt.buttonPressed === "Cancel") {
-      context.cancel();
-      return;
-    }
-
-    switch (prompt.buttonPressed) {
-      case "Manage Overdue Tasks":
-        // If you want to call your ManageOverdueTasks script:
-        // ManageOverdueTasks.run();
-        alert(
-          "You selected to manage overdue tasks. (Placeholder for ManageOverdueTasks action.)"
-        );
-        break;
-
-      case "Manage Deadlines":
-        alert(
-          "You selected to manage deadlines. (Placeholder for ManageDeadlines action.)"
-        );
-        break;
-
-      case "Schedule Tasks for Tomorrow":
-        alert(
-          "You selected to schedule tasks for tomorrow. (Placeholder for scheduling tasks.)"
-        );
-        break;
-
-      default:
-        context.cancel();
-        break;
-    }
+  if (!didSelect || prompt.buttonPressed === "Cancel") {
+    context.cancel();
+    return;
   }
 
-  // Expose TaskMenu_run for scripts that require this file
-  // Drafts recognizes these top-level assignments as module exports
-  this.TaskMenu_run = TaskMenu_run;
-})();
+  switch (prompt.buttonPressed) {
+    case "Manage Overdue Tasks":
+      // Placeholder: manageOverdueTasks();
+      alert(
+        "You selected to manage overdue tasks. (Placeholder for ManageOverdueTasks action.)"
+      );
+      break;
+
+    case "Manage Deadlines":
+      // Placeholder: manageDeadlines();
+      alert(
+        "You selected to manage deadlines. (Placeholder for ManageDeadlines action.)"
+      );
+      break;
+
+    case "Schedule Tasks for Tomorrow":
+      // Placeholder: scheduleTasksForTomorrow();
+      alert(
+        "You selected to schedule tasks for tomorrow. (Placeholder for scheduling tasks.)"
+      );
+      break;
+
+    default:
+      context.cancel();
+      break;
+  }
+}
+
+/**
+ * Optionally, define other top-level functions or variables for supporting your actions.
+ * Example:
+ * function manageOverdueTasks() {
+ *   // ...
+ * }
+ */
