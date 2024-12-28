@@ -3,18 +3,23 @@
 /**
  * TaskMenu.js
  * Presents a top-level function TaskMenu_run(), which shows a prompt for managing various tasks.
- * Uses a global LoggingUtils reference if it's available (loaded by MyDraftsLoader).
+ * Uses a global LoggingUtils reference if it’s available (loaded by MyDraftsLoader).
  */
 
-// Set up a local logger reference, defaulting to a no-op if LoggingUtils is not defined
-let logger = {
-  info:  function() {},
-  warn:  function() {},
-  error: function() {}
-};
-
-if (typeof LoggingUtils !== "undefined") {
-  logger = LoggingUtils;
+/**
+ * getLogger
+ * Returns the global LoggingUtils if available, otherwise a no-op logger.
+ */
+function getLogger() {
+  if (typeof LoggingUtils !== "undefined") {
+    return LoggingUtils;
+  }
+  // Return no-op logger if LoggingUtils is not present
+  return {
+    info: function() {},
+    warn: function() {},
+    error: function() {}
+  };
 }
 
 /**
@@ -22,6 +27,7 @@ if (typeof LoggingUtils !== "undefined") {
  * Displays a prompt with options for task management, logs user selection, and calls the appropriate code.
  */
 function TaskMenu_run() {
+  const logger = getLogger();
   logger.info("TaskMenu: Starting menu prompt.");
 
   const prompt = Prompt.create();
